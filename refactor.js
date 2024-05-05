@@ -62,68 +62,64 @@ let order = {
 };
 
 function processOrder(order, inventory) {
-  let total = 0;
   let shipping = 0;
-  let tax = 0;
   let grand_total = 0;
-  let items = order.items;
-  let country = order.country;
   let total_items_ = 0;
   let total_items_Price = 0;
   let total_items_Tax = 0;
   let total_items_Shipping = 0;
   let total_items_GrandTotal = 0;
 
-  for (let i = 0; i < items.length; i++) {
+  for (const orderItems of order.items) {   
     // Get the item details
-    let item = items[i];
-    let itemID = item.id;
-    let item_quantity = item.quantity;
     let item_price = 0;
     let itemTax = 0;
     let itemShipping = 0;
     let itemGrandTotal = 0;
 
-    for (let j = 0; j < inventory.length; j++) {
+    for (const itemOfInventory of inventory) {
       // Find the item in the inventory
-      if (inventory[j].id === itemID) {
-        item_price = inventory[j].price;
+      if (itemOfInventory.id === orderItems.id) {
+        item_price = itemOfInventory.price;
         itemTax = item_price * 0.1;
         itemShipping = item_price * 0.05;
         itemGrandTotal = item_price + itemTax + itemShipping;
-        total_items_Price += item_price * item_quantity;
-        total_items_Tax += itemTax * item_quantity;
-        total_items_Shipping += itemShipping * item_quantity;
-        total_items_GrandTotal += itemGrandTotal * item_quantity;
-        total_items_ += item_quantity;
+        total_items_Price += item_price * orderItems.quantity;
+        total_items_Tax += itemTax * orderItems.quantity;
+        total_items_Shipping += itemShipping * orderItems.quantity;
+        total_items_GrandTotal += itemGrandTotal * orderItems.quantity;
+        total_items_ += orderItems.quantity;
         break;
       }
     }
   }
 
-  if (country === "United States") {
-    shipping = 5;
-  } else if (country === "Canada") {
-    shipping = 10;
-  } else {
-    shipping = 15;
-  }
+  if (order.country === "United States") shipping = 5
+  if (order.country === "Canada") shipping = 10
+  else shipping = 15 
 
-  tax = total_items_Tax;
-  total = total_items_Price;
-  grand_total = total + tax + shipping;
+  grand_total = total_items_Price + total_items_Tax + shipping;
 
   return {
-    total,
+    total_items_Price,
     shipping,
-    tax,
+    total_items_Tax,
     grand_total,
     total_items_,
-    total_items_Price,
-    total_items_Tax,
     total_items_Shipping,
     total_items_GrandTotal,
   };
 }
 
 console.log(processOrder(order, inventory));
+
+  // total: 10.5,
+  // shipping: 15,
+  // tax: 1.05,
+  // grand_total: 26.55,
+  // total_items_: 7,
+  // total_items_Price: 10.5,
+  // total_items_Tax: 1.05,
+  // total_items_Shipping: 0.525,
+  // total_items_GrandTotal: 12.075
+
